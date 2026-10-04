@@ -1,0 +1,70 @@
+USE seismic_db;
+
+-- Q1: Total Earthquakes
+SELECT COUNT(*) AS total_earthquakes FROM earthquakes;
+
+-- Q2: Average Magnitude
+SELECT ROUND(AVG(mag),2) AS avg_magnitude FROM earthquakes;
+
+-- Q3: Count by Status (Reviewed vs Automatic)
+SELECT status, COUNT(*) AS total FROM earthquakes GROUP BY status;
+
+-- Q4: Count by Type
+SELECT type, COUNT(*) AS total FROM earthquakes GROUP BY type ORDER BY total DESC;
+
+-- Q5: Country Wise Earthquake Count (Top 10)
+SELECT TRIM(SUBSTRING_INDEX(place, ',', -1)) AS country, COUNT(*) AS quake_count FROM earthquakes GROUP BY country ORDER BY quake_count DESC LIMIT 10;
+
+-- Q6: Country Wise Total Magnitude Loss (sig ku bathila mag)
+SELECT TRIM(SUBSTRING_INDEX(place, ',', -1)) AS country, ROUND(SUM(mag),2) AS total_mag, COUNT(*) AS quake_count FROM earthquakes GROUP BY country ORDER BY total_mag DESC LIMIT 10;
+
+-- Q7: Year Wise Count
+SELECT YEAR(time) AS year, COUNT(*) AS total FROM earthquakes GROUP BY year ORDER BY year DESC;
+
+-- Q8: Average Depth
+SELECT ROUND(AVG(depth_km),2) AS avg_depth FROM earthquakes;
+
+-- Q9: Top 5 Deepest Earthquakes
+SELECT place, mag, depth_km FROM earthquakes ORDER BY depth_km DESC LIMIT 5;
+
+-- Q10: Top 5 Highest Magnitude (sig ku bathila mag)
+SELECT place, mag, depth_km FROM earthquakes ORDER BY mag DESC LIMIT 5;
+
+-- Q11: Alert Level Wise (mag base la)
+SELECT CASE WHEN mag < 3 THEN 'green' WHEN mag < 5 THEN 'yellow' WHEN mag < 6.5 THEN 'orange' ELSE 'red' END AS alert_level, COUNT(*) AS total, ROUND(AVG(mag),2) AS avg_mag FROM earthquakes GROUP BY alert_level ORDER BY total DESC;
+
+-- Q12: Shallow vs Deep Quakes
+SELECT CASE WHEN depth_km < 70 THEN 'Shallow' WHEN depth_km < 300 THEN 'Intermediate' ELSE 'Deep' END AS depth_type, COUNT(*) AS total FROM earthquakes GROUP BY depth_type;
+
+-- Q13: Magnitude Range Wise Count
+SELECT CASE WHEN mag < 2 THEN 'Micro' WHEN mag < 4 THEN 'Minor' WHEN mag < 5 THEN 'Light' WHEN mag < 6 THEN 'Moderate' WHEN mag < 7 THEN 'Strong' ELSE 'Major' END AS mag_category, COUNT(*) AS total FROM earthquakes GROUP BY mag_category ORDER BY total DESC;
+
+-- Q14: High Station Coverage (nst > 50)
+SELECT id, place, mag, nst, dmin FROM earthquakes WHERE nst > 50 ORDER BY nst DESC LIMIT 10;
+
+-- Q15: Monthly Trend
+SELECT MONTH(time) AS month, COUNT(*) AS total FROM earthquakes GROUP BY MONTH(time) ORDER BY month;
+
+-- Q16: Average Magnitude by Year
+SELECT YEAR(time) AS year, ROUND(AVG(mag),2) AS avg_mag FROM earthquakes GROUP BY YEAR(time) ORDER BY year;
+
+-- Q17: Top 10 Places with Repeated Quakes
+SELECT place, COUNT(*) AS repeated_count FROM earthquakes GROUP BY place ORDER BY repeated_count DESC LIMIT 10;
+
+-- Q18: Day Wise Count
+SELECT DAYNAME(time) AS day_name, COUNT(*) AS total FROM earthquakes GROUP BY DAYNAME(time) ORDER BY total DESC;
+
+-- Q19: Earthquakes with Gap (dmin > 5)
+SELECT place, mag, dmin FROM earthquakes WHERE dmin > 5 ORDER BY dmin DESC LIMIT 10;
+ 
+-- Q20: Lowest Magnitude Quakes.......
+SELECT place, mag FROM earthquakes ORDER BY mag ASC LIMIT 10;
+
+-- Q21: Count of Quakes per Hour
+SELECT HOUR(time) AS hour_of_day, COUNT(*) AS total FROM earthquakes GROUP BY HOUR(time) ORDER BY hour_of_day;
+
+-- Q22: Top 5 Countries with Highest Avg Magnitude
+SELECT TRIM(SUBSTRING_INDEX(place, ',', -1)) AS country, ROUND(AVG(mag),2) AS avg_mag FROM earthquakes GROUP BY country ORDER BY avg_mag DESC LIMIT 5;
+
+-- Q23: Full Summary Report
+SELECT COUNT(*) AS total, ROUND(AVG(mag),2) AS avg_mag, MAX(mag) AS max_mag, MIN(mag) AS min_mag, SUM(tsunami) AS total_tsunami FROM earthquakes;
